@@ -1,57 +1,44 @@
-# Amplytico Group 3 (Final Submission Repo)
+# Amplytico Group 3 (Final Submission)
 
-This repository contains the **analysis assets** for Team 3’s project:
+This repo contains the **analysis assets** for Team 3’s report:
 **Climate-Aware Optimization of Hyperscale Data Center Cooling Systems**.
 
-It is intentionally “lean” for GitHub submission:
-- excludes multi-GB raw weather and full county-level simulation CSVs
-- includes the **latest, report-relevant scripts** and **compact derived datasets** (so the key metrics can still be reproduced)
+It’s intentionally “lean” for GitHub: it keeps the **latest report-relevant scripts + compact outputs**, without the multi-GB raw files used by the full application.
 
-## What’s included (folder map)
-- `01_weather_api_and_pue_wue_simulation/`  
-  Weather retrieval (Open-Meteo) + AE/WEC PUE/WUE simulation pipeline scripts
-- `02_drought_risk/`  
-  U.S. Drought Monitor API integration + drought data cleaning scripts
-- `03_utility_pricing/`  
-  State-level electricity & water pricing inputs used in the project
-- `04_analysis_data/`  
-  Precomputed rollups + compact derived tables used for the report figures/tables
-- `05_tableau_visuals/`  
-  Tableau workbooks and small supporting images
-- `06_climate_zone_analysis/`  
-  Zone-level datasets/scripts/workbooks for IECC climate zone analysis + sensitivity
-- `scripts/`  
-  Builders that turn the large drought weekly file into compact summaries and then into water-stress/effective-cost tables
-- `docs/`  
-  Project blueprints and pipeline documentation
-- `PUE_WUE_SIM/` (repo root)  
-  The simulator core + COP model pickles used by `county_pipeline.py`
+## Quick start (recommended)
+Rebuild the compact county-level outputs used in the report:
 
-## Key derived outputs (already generated)
+```bash
+python scripts/build_drought_summary_by_county.py
+python scripts/build_water_stress_and_effective_costs.py
+```
+
+These generate:
 - `04_analysis_data/drought_summary_by_county.csv`
 - `04_analysis_data/water_stress_by_county_system.csv`
 - `04_analysis_data/effective_utility_cost_by_county_system.csv`
 
-## Weather scripts (submission-friendly defaults)
-To let the weather+PUE/WUE scripts run without the full multi-GB DuckDB exports, the submission repo includes:
-`01_weather_api_and_pue_wue_simulation/weather_hourly_with_counties_sample.csv`
-which is generated from Open-Meteo using:
-`python scripts/build_weather_hourly_with_counties_sample.py`
+## What’s included (by folder)
+- `01_weather_api_and_pue_wue_simulation/`: Open-Meteo weather + AE/WEC midpoint simulation scripts + a small sample dataset
+- `02_drought_risk/`: US Drought Monitor (USDM) integration + drought cleanup scripts (week 53 handling, FIPS formatting)
+- `03_utility_pricing/`: `pricing_by_state.csv` (electric + water rates)
+- `04_analysis_data/`: compact rollups + derived tables used directly in the report
+- `05_tableau_visuals/`: Tableau workbooks + small supporting images
+- `06_climate_zone_analysis/`: climate zone datasets + scripts + sensitivity assets
+- `scripts/`: builder scripts (drought summary -> water stress -> effective utility cost)
+- `docs/`: blueprints and pipeline documentation
+- `PUE_WUE_SIM/` (repo root): simulator core (`simulation_funs_DC.py`) + COP model pickles
 
-## Reproduce the compact outputs (recommended)
-This submission includes the newest **week52only** drought weekly file compressed as:
-`02_drought_risk/drought_weekly_by_county_2015_2024_week52only_fixed_2.0.csv.gz`
+## Optional (weather sample)
+If you want to regenerate the included weather sample:
 
-To regenerate the compact outputs from scratch:
-1. Build county drought summary (uses the included week52only file by default):
-   ```bash
-   python scripts/build_drought_summary_by_county.py
-   ```
-2. Build water stress + effective utility cost tables:
-   ```bash
-   python scripts/build_water_stress_and_effective_costs.py
-   ```
+```bash
+python scripts/build_weather_hourly_with_counties_sample.py
+```
 
 ## Tableau note
-The included `*.twb` workbooks were exported from the original workspace and still reference larger extracts / absolute local paths. If you open them and Tableau asks to reconnect data sources, simply re-link them to the files you have (especially the compact CSVs in `04_analysis_data/`).
+The `*.twb` workbooks may reference absolute paths/extracts from the original workspace. If Tableau asks to reconnect, point it to the compact CSVs in `04_analysis_data/`.
+
+## Related app repo (full tool)
+- [Hyperscale Data Center Optimization Tool](https://github.com/matthewkennedy22/Hyperscale-Data-Center-Optimization-Tool)
 
